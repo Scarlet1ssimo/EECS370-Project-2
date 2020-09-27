@@ -1,6 +1,8 @@
 # Project 2 Writeup
 
-建议直奔两处 Happy Reference 
+建议直奔两处 Happy Reference
+
+觉得写的不清晰的欢迎提issue。
 
 ## Assembler
 
@@ -204,3 +206,25 @@ SubAdr D 1              (Symbol Table)
         r6  temporary value (can hold different values at different times, e.g., +1, -1, function address)
         r7  return address - ENFORCED
 
+## Spoiler
+
+你们可能会喜欢的自问自答环节（别看了，没意思的）
+
+- Q：Symbol Table有啥用？
+  - A：用来告诉其他obj，来找全局标签的表（所以我个人觉得Undefined Global Label放在这里意义不大）
+- Q：Relocation Table有啥用？
+  - A：用来告诉自己obj，用来解决refer地址偏移的表
+- Q：什么东西会出现在Symbol Table里？
+  - A：所有Defined or Undefined Global Label
+- Q：什么东西会出现在Relocation Table里？
+  - A：所有在lw/sw/.fill右侧（被refer）的label
+- Q：那beq有哪些特殊处理
+  - A：不接受任何Undefined Local or Global Label，其余和p1相同。因为是计算.text段里的相对位置，所以不需要考虑relocation（不过如果给beq喂了一个来自于.data段的信息，程序还是会崩的吧）
+- Q：TDU怎么区分，有啥用。
+  - A：U用来指示**Undefined Label**。TD用来指示**Defined Label**所在的段，如果对应opcode是.fill那就是.data段，否则是.text段。这些信息在relocation重新计算偏移时会用到。
+- Q：Relocation时如何计算偏移
+  - A：要分成Local标签和Global标签来考虑
+    - Local: 只需要考虑refer的目标在.data/.text段里的情况，建议画个图（多文件情况下.text段和.data段的信息是怎么堆叠的，要意识到local标签本身就是个offset）观察一下目标地址还进行了多少偏移。
+    - Global: 直接用这个标签的绝对地址（可以算出来）来覆盖指令里的地址。
+- Q：你为什么要写这玩意儿。
+  - A：请大家有问题不要再打扰yxx了，yxx都没空闲时间卷370281和376了（有空能不能来找ktt玩）。
